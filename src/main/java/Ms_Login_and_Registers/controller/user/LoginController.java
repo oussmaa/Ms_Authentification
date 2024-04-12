@@ -6,11 +6,10 @@ import Ms_Login_and_Registers.service.user.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class LoginController {
 
     @Autowired
@@ -22,4 +21,13 @@ public class LoginController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/api/auth/GetUser")
+    public ResponseEntity<LoginResponse> GetUserFromToken(@Valid @RequestBody LoginResponse token)
+    {
+
+        LoginResponse response = loginService.GetUserFromToken(token.getToken());
+        return ResponseEntity.ok(response);
+    }
+
 }

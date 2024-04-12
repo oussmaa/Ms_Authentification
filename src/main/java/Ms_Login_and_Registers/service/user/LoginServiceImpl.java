@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoginServiceImpl implements LoginService{
     private static final String BEARER_TYPE = "Bearer";
@@ -55,6 +57,35 @@ public class LoginServiceImpl implements LoginService{
                     .build();
 
         }
+
+    @Override
+    public LoginResponse GetUserFromToken(String token) {
+       boolean validetoken= jwtUtils.validateJwtToken(token);
+     System.out.println(validetoken);
+
+        if (validetoken)
+        {
+            String username = jwtUtils.getUserNameFromJwtToken(token);
+
+            Optional<User> userfind = userRepository.findByUsername(username);
+
+            return LoginResponse.builder()
+                    .token(token)
+                    .type(BEARER_TYPE)
+                    .username(userfind.get().getUsername())
+                    .email(userfind.get().getEmail())
+                    .name(userfind.get().getName())
+                    .locked(userfind.get().isLocked())
+                    .phone(userfind.get().getPhone())
+                    .themeid(userfind.get().getThemeid())
+                    .userrole(userfind.get().getUserrole())
+                    .build();
+
+        }
+return LoginResponse.builder().build();
+
+
+    }
 
 
 }
