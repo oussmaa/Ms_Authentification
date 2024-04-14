@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class LoginResponse {
+    private  Long id;
     private String token;
     private String type;
     private String username;
@@ -22,6 +23,10 @@ public class LoginResponse {
     private String phone;
     private Long themeid;
     private Long userrole;
+    private String images;
+
+    public LoginResponse(String token) {
+    }
 }
 
 

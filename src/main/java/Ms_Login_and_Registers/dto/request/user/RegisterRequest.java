@@ -43,4 +43,6 @@ public class RegisterRequest {
     private Long themeid;
 
     private Long userrole;
+    private String images;
+
 }

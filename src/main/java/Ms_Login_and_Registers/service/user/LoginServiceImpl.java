@@ -6,13 +6,20 @@ import Ms_Login_and_Registers.dto.request.user.LoginRequest;
 import Ms_Login_and_Registers.models.User;
 import Ms_Login_and_Registers.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class LoginServiceImpl implements LoginService{
@@ -20,7 +27,8 @@ public class LoginServiceImpl implements LoginService{
 
     @Autowired
     AuthenticationManager authenticationManager;
-
+    @Value("${upload.path}")
+    private String uploadPath; // Path to store uploaded files
     @Autowired
     JwtUtils jwtUtils;
 
@@ -60,32 +68,65 @@ public class LoginServiceImpl implements LoginService{
 
     @Override
     public LoginResponse GetUserFromToken(String token) {
-       boolean validetoken= jwtUtils.validateJwtToken(token);
-     System.out.println(validetoken);
+        boolean validetoken = false;
 
-        if (validetoken)
-        {
-            String username = jwtUtils.getUserNameFromJwtToken(token);
+            validetoken = jwtUtils.validateJwtToken(token);
+            if (validetoken) {
+                String username = jwtUtils.getUserNameFromJwtToken(token);
 
-            Optional<User> userfind = userRepository.findByUsername(username);
+                Optional<User> userfind = userRepository.findByUsername(username);
 
-            return LoginResponse.builder()
-                    .token(token)
-                    .type(BEARER_TYPE)
-                    .username(userfind.get().getUsername())
-                    .email(userfind.get().getEmail())
-                    .name(userfind.get().getName())
-                    .locked(userfind.get().isLocked())
-                    .phone(userfind.get().getPhone())
-                    .themeid(userfind.get().getThemeid())
-                    .userrole(userfind.get().getUserrole())
-                    .build();
+                return LoginResponse.builder()
+                        .token(token)
+                        .type(BEARER_TYPE)
+                        .username(userfind.get().getUsername())
+                        .email(userfind.get().getEmail())
+                        .name(userfind.get().getName())
+                        .locked(userfind.get().isLocked())
+                        .phone(userfind.get().getPhone())
+                        .themeid(userfind.get().getThemeid())
+                        .userrole(userfind.get().getUserrole())
+                        .images(userfind.get().getImages())
+                        .id(userfind.get().getId())
+                        .build();
 
-        }
-return LoginResponse.builder().build();
+            }
+            return LoginResponse.builder().build();
+
+
 
 
     }
 
+    @Override
+    public User GetUserFromId(Long id) {
+         return userRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public void SaveImageUser(MultipartFile file, Long id) throws Exception {
+        try {
+           User user = GetUserFromId(id);
+            // Generate unique file name to avoid conflicts
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+            // Resolve the path to save the file
+            Path path = Paths.get(uploadPath + File.separator + fileName);
+
+           if (user!=null)
+           {
+               user.setImages(fileName);
+               userRepository.save(user);
+           }
+
+
+            // Save the file to disk
+            Files.copy(file.getInputStream(), path);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.getMessage().toString());
+        }
+    }
 
 }
