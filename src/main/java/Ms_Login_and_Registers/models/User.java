@@ -51,5 +51,7 @@ public class User {
     private Long userrole;
     private String images;
 
+    private String adress;
+
 
 }

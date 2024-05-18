@@ -1,5 +1,6 @@
 package Ms_Login_and_Registers.dto.request.user;
 
+import Ms_Login_and_Registers.dto.response.user.RolesRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -16,33 +17,31 @@ import java.util.Set;
 @Builder
 public class RegisterRequest {
 
-    @NotBlank
-    @Size(min = 3, max = 20)
+
     private String username;
 
-    @NotBlank
-    @Size(max = 50)
-    @Email
+
     private String email;
 
-    @NotBlank
-    @Size(min = 6, max = 40)
+
     private String password;
 
-    @NotBlank
-    @Size(min = 3, max = 20)
+
     private String name;
 
 
 
     private boolean locked;
 
-    @Size(max = 10)
+
     private String phone;
 
     private Long themeid;
 
     private Long userrole;
     private String images;
+    private String adress;
+
+    private  RolesRequest rolesRequest;
 
 }

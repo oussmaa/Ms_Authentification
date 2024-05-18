@@ -5,6 +5,7 @@ import Ms_Login_and_Registers.dto.request.user.RegisterRequest;
 import Ms_Login_and_Registers.exception.InvalidRequestException;
 import Ms_Login_and_Registers.models.User;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,8 @@ public class RegisterServiceImpl implements RegisterService {
 
     UserRepository userRepository;
 
-
+   @Autowired
+   RolesService rolesService;
 
     PasswordEncoder encoder;
 
@@ -35,6 +37,17 @@ public class RegisterServiceImpl implements RegisterService {
         user.setLocked(request.isLocked());
         user.setPhone(request.getPhone());
         user.setPassword(encoder.encode(request.getPassword()));
+        user.setImages(request.getImages());
+        user.setAdress(request.getAdress());
+        try {
+
+            user.setUserrole(rolesService.createRole(request.getRolesRequest()));
+
+        }catch (Exception e)
+        {
+            return;
+        }
+
         userRepository.save(user);
 
     }

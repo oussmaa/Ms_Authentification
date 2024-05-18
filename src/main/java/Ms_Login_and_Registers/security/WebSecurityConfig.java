@@ -59,6 +59,7 @@ public class WebSecurityConfig {
                         auth.requestMatchers("/api/auth/register").permitAll()
                                 .requestMatchers("/api/auth/login").permitAll()
                                 .requestMatchers("/api/auth/GetUser").permitAll()
+                                .requestMatchers("/api/Users/GetAllUsers").permitAll()
                                 .requestMatchers("/upload").permitAll()
                                 .requestMatchers("/images/**").permitAll()
                                 .anyRequest().authenticated()

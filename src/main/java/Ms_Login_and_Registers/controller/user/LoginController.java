@@ -3,6 +3,7 @@ package Ms_Login_and_Registers.controller.user;
 import Ms_Login_and_Registers.dto.response.user.LoginResponse;
 import Ms_Login_and_Registers.dto.request.user.LoginRequest;
 import Ms_Login_and_Registers.models.User;
+import Ms_Login_and_Registers.repository.UserRepository;
 import Ms_Login_and_Registers.service.user.LoginService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,22 +34,23 @@ public class LoginController {
     @Autowired
     LoginService loginService;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Value("${upload.path}")
     private String uploadPath; // Path to store uploaded files
 
     @PostMapping("/upload")
-    public String uploadImage(@RequestParam("file") MultipartFile file,@RequestParam("id") long id) throws Exception {
+    public String uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("id") long id) throws Exception {
         if (file.isEmpty()) {
             return "Please select a file to upload";
         }
         try {
-            loginService.SaveImageUser(file,id);
+            loginService.SaveImageUser(file, id);
 
             return "File uploaded successfully";
-        }
-        catch (Exception e)
-        {
-       throw new Exception(e.getMessage().toString());
+        } catch (Exception e) {
+            throw new Exception(e.getMessage().toString());
         }
 
     }
@@ -82,6 +85,11 @@ public class LoginController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new byte[0]);
         }
+    }
+    @GetMapping("/api/Users/GetAllUsers")
+    public ResponseEntity<List<User>> GetAllUsers()
+    {
+        return ResponseEntity.ok(userRepository.findAll());
     }
 
     @PostMapping("/api/auth/GetUser")

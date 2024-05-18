@@ -1,5 +1,6 @@
 package Ms_Login_and_Registers.dto.response.user;
 
+import Ms_Login_and_Registers.models.Roles;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class LoginResponse {
     private Long themeid;
     private Long userrole;
     private String images;
-
+    private Roles roles;
     public LoginResponse(String token) {
     }
 }

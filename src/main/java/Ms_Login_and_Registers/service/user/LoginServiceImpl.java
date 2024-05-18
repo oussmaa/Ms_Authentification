@@ -1,6 +1,8 @@
 package Ms_Login_and_Registers.service.user;
 
 import Ms_Login_and_Registers.dto.response.user.LoginResponse;
+import Ms_Login_and_Registers.models.Roles;
+import Ms_Login_and_Registers.repository.RolesRepository;
 import Ms_Login_and_Registers.repository.UserRepository;
 import Ms_Login_and_Registers.dto.request.user.LoginRequest;
 import Ms_Login_and_Registers.models.User;
@@ -34,6 +36,9 @@ public class LoginServiceImpl implements LoginService{
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RolesRepository rolesRepository;
     @Override
     public LoginResponse process(LoginRequest request) {
 
@@ -50,7 +55,7 @@ public class LoginServiceImpl implements LoginService{
             String jwt = jwtUtils.generateJwtToken(authentication);
 
             UserDetailImpl userDetails = (UserDetailImpl) authentication.getPrincipal();
-
+        Roles roles = rolesRepository.findById(userDetails.getUserrole()).get();
 
             return LoginResponse.builder()
                     .token(jwt)
@@ -61,7 +66,7 @@ public class LoginServiceImpl implements LoginService{
                     .locked(userDetails.isLocked())
                     .phone(userDetails.getPhone())
                     .themeid(userDetails.getThemeid())
-                    .userrole(userDetails.getUserrole())
+                    .userrole(userDetails.getUserrole()).roles(roles)
                     .build();
 
         }
