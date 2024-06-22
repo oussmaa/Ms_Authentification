@@ -45,7 +45,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         }catch (Exception e)
         {
-            return;
+              throw new InvalidRequestException( e.getMessage().toString());
         }
 
         userRepository.save(user);

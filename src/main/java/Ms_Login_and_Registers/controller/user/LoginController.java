@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/login")
 @CrossOrigin(origins = "http://localhost:3000")
 public class LoginController {
 
@@ -55,11 +56,15 @@ public class LoginController {
 
     }
 
-    @PostMapping("/api/auth/login")
+    @PostMapping("/loginuser")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginResponse response = loginService.process(loginRequest);
 
-        return ResponseEntity.ok(response);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
 
     @GetMapping("/images/{filename}")
@@ -86,31 +91,28 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new byte[0]);
         }
     }
-    @GetMapping("/api/Users/GetAllUsers")
+    @GetMapping("/GetAllUsers")
     public ResponseEntity<List<User>> GetAllUsers()
     {
         return ResponseEntity.ok(userRepository.findAll());
     }
 
-    @PostMapping("/api/auth/GetUser")
-    public ResponseEntity<LoginResponse> GetUserFromToken(@Valid @RequestBody LoginResponse token)
-    {
-try {
-    LoginResponse response = loginService.GetUserFromToken(token.getToken());
-    if (response.getToken() == null)
-    {
-        return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS).body(new LoginResponse("An error occurred: "));
+    @PostMapping("/GetUser")
+    public ResponseEntity<LoginResponse> GetUserFromToken(@Valid @RequestBody LoginResponse loginResponse) {
+        try {
+            LoginResponse response = loginService.GetUserFromToken(loginResponse.getToken());
+            if (response.getToken() == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new LoginResponse("Token Is Invalid",false));
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
 
-    }
-    else
-    return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginResponse(e.getMessage().toString(),false));
 
-}
-catch (Exception e)
-{
-    return ResponseEntity.status(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS).body(new LoginResponse("An error occurred: " + e.getMessage()));
+        }
 
-}
     }
 
 }

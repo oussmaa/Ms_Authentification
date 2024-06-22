@@ -45,29 +45,40 @@ public class LoginServiceImpl implements LoginService{
         String username="";
         User user = userRepository.findByEmail(request.getEmail());
 
+        if (user == null) {
+            return new LoginResponse("User not found", false);
+        }
         if (user!=null) {
             username = user.getUsername();
         }
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, request.getPassword()));
+    try {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, request.getPassword()));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtils.generateJwtToken(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-            UserDetailImpl userDetails = (UserDetailImpl) authentication.getPrincipal();
+        UserDetailImpl userDetails = (UserDetailImpl) authentication.getPrincipal();
         Roles roles = rolesRepository.findById(userDetails.getUserrole()).get();
 
-            return LoginResponse.builder()
-                    .token(jwt)
-                    .type(BEARER_TYPE)
-                    .username(userDetails.getUsername())
-                    .email(userDetails.getEmail())
-                    .name(userDetails.getName())
-                    .locked(userDetails.isLocked())
-                    .phone(userDetails.getPhone())
-                    .themeid(userDetails.getThemeid())
-                    .userrole(userDetails.getUserrole()).roles(roles)
-                    .build();
+        return LoginResponse.builder()
+                .token(jwt)
+                .type(BEARER_TYPE)
+                .username(userDetails.getUsername())
+                .email(userDetails.getEmail())
+                .name(userDetails.getName())
+                .locked(userDetails.isLocked())
+                .phone(userDetails.getPhone())
+                .themeid(userDetails.getThemeid())
+                .userrole(userDetails.getUserrole()).
+                 roles(roles).success(true).message("Login successful").id(userDetails.getId())
+                .build();
+
+    }catch (Exception e)
+    {
+       return new LoginResponse(e.getMessage().toString(), false);
+    }
+
 
         }
 
@@ -76,6 +87,7 @@ public class LoginServiceImpl implements LoginService{
         boolean validetoken = false;
 
             validetoken = jwtUtils.validateJwtToken(token);
+
             if (validetoken) {
                 String username = jwtUtils.getUserNameFromJwtToken(token);
 

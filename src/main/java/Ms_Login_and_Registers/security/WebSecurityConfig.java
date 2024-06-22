@@ -56,12 +56,12 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/register").permitAll()
-                                .requestMatchers("/api/auth/login").permitAll()
-                                .requestMatchers("/api/auth/GetUser").permitAll()
-                                .requestMatchers("/api/Users/GetAllUsers").permitAll()
-                                .requestMatchers("/upload").permitAll()
-                                .requestMatchers("/images/**").permitAll()
+                        auth.requestMatchers("/register/adduser").permitAll()
+                                .requestMatchers("/login/loginuser").permitAll()
+                                .requestMatchers("/login/GetUser").permitAll()
+                                .requestMatchers("/login/GetAllUsers").permitAll()
+                                .requestMatchers("/login/upload").permitAll()
+                                .requestMatchers("/login/images/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

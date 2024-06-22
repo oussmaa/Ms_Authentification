@@ -43,7 +43,7 @@ public class User {
 
     private boolean locked;
 
-    @Size(max = 10)
+    @Size(max = 20)
     private String phone;
 
     private Long themeid;

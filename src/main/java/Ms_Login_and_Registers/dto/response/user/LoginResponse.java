@@ -14,6 +14,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class LoginResponse {
+    private String message;
+    private boolean success;
     private  Long id;
     private String token;
     private String type;
@@ -26,6 +28,15 @@ public class LoginResponse {
     private Long userrole;
     private String images;
     private Roles roles;
+
+    public LoginResponse() {
+    }
+
+    public LoginResponse(String message, boolean success) {
+        this.message = message;
+        this.success = success;
+    }
+
     public LoginResponse(String token) {
     }
 }
