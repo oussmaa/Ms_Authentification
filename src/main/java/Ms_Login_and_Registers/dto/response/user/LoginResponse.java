@@ -1,5 +1,6 @@
 package Ms_Login_and_Registers.dto.response.user;
 
+import Ms_Login_and_Registers.models.Permissions;
 import Ms_Login_and_Registers.models.Roles;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,9 +27,10 @@ public class LoginResponse {
     private boolean locked;
     private String phone;
     private Long themeid;
-    private Long userrole;
+    private Roles userrole;
     private String images;
-    private Roles roles;
+    private Set<Roles> roles;
+    private Set<Permissions> permissions;
 
     public LoginResponse() {
     }

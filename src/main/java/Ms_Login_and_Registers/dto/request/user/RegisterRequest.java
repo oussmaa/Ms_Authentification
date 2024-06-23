@@ -38,10 +38,10 @@ public class RegisterRequest {
 
     private Long themeid;
 
-    private Long userrole;
-    private String images;
+     private String images;
     private String adress;
 
-    private  RolesRequest rolesRequest;
+     private Set<String> roleNames;
+    private Set<String> permissionNames;
 
 }

@@ -1,5 +1,6 @@
 package Ms_Login_and_Registers.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,11 +25,7 @@ public class Roles {
     @Column(unique = true)
     private String roles;
 
-    @ManyToMany
-    @JoinTable(
-            name = "role_permission",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
-    private Set<Permissions> permissions = new HashSet<>();
+    @ManyToMany(mappedBy = "roles")
+    @JsonBackReference
+    private Set<User> users;
 }

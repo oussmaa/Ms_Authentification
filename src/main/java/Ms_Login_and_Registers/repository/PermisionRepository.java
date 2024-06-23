@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface PermisionRepository extends JpaRepository<Permissions,Long> {
 
    Permissions findByCode(String code);
+
 }

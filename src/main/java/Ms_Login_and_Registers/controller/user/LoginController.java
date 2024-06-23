@@ -98,8 +98,9 @@ public class LoginController {
     }
 
     @PostMapping("/GetUser")
-    public ResponseEntity<LoginResponse> GetUserFromToken(@Valid @RequestBody LoginResponse loginResponse) {
+    public ResponseEntity<LoginResponse> GetUserFromToken(@RequestBody LoginResponse loginResponse) {
         try {
+            System.out.println(loginResponse.getToken());
             LoginResponse response = loginService.GetUserFromToken(loginResponse.getToken());
             if (response.getToken() == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new LoginResponse("Token Is Invalid",false));

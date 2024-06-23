@@ -1,5 +1,6 @@
 package Ms_Login_and_Registers.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,5 +22,7 @@ public class Permissions {
     @Column(unique = true)
     private String code;
 
-
+    @ManyToMany(mappedBy = "permissions")
+    @JsonBackReference
+    private Set<User> users;
 }

@@ -44,7 +44,7 @@ public class RolesService {
                 permission.setCode(permissionName);
                 permission = permissionRepository.save(permission);
             }
-            role.getPermissions().add(permission);
+        //    role.getPermissions().add(permission);
         }
 
 

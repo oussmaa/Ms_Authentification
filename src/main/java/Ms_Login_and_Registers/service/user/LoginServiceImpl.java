@@ -59,7 +59,7 @@ public class LoginServiceImpl implements LoginService{
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailImpl userDetails = (UserDetailImpl) authentication.getPrincipal();
-        Roles roles = rolesRepository.findById(userDetails.getUserrole()).get();
+      //  Roles roles = rolesRepository.findById(userDetails.getUserrole()).get();
 
         return LoginResponse.builder()
                 .token(jwt)
@@ -70,8 +70,7 @@ public class LoginServiceImpl implements LoginService{
                 .locked(userDetails.isLocked())
                 .phone(userDetails.getPhone())
                 .themeid(userDetails.getThemeid())
-                .userrole(userDetails.getUserrole()).
-                 roles(roles).success(true).message("Login successful").id(userDetails.getId())
+                .success(true).message("Login successful").id(userDetails.getId())
                 .build();
 
     }catch (Exception e)
@@ -102,9 +101,10 @@ public class LoginServiceImpl implements LoginService{
                         .locked(userfind.get().isLocked())
                         .phone(userfind.get().getPhone())
                         .themeid(userfind.get().getThemeid())
-                        .userrole(userfind.get().getUserrole())
                         .images(userfind.get().getImages())
                         .id(userfind.get().getId())
+                        .roles(userfind.get().getRoles())
+                        .permissions(userfind.get().getPermissions())
                         .build();
 
             }

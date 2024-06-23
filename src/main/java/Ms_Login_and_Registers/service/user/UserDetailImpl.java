@@ -1,5 +1,7 @@
 package Ms_Login_and_Registers.service.user;
 
+import Ms_Login_and_Registers.models.Permissions;
+import Ms_Login_and_Registers.models.Roles;
 import Ms_Login_and_Registers.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,13 +42,7 @@ public class UserDetailImpl implements UserDetails {
         this.themeid = themeid;
     }
 
-    public Long getUserrole() {
-        return userrole;
-    }
 
-    public void setUserrole(Long userrole) {
-        this.userrole = userrole;
-    }
 
     private String email;
 
@@ -59,8 +55,9 @@ public class UserDetailImpl implements UserDetails {
     private boolean locked;
     private String phone;
     private Long themeid;
-    private Long userrole;
-    public UserDetailImpl(Long id, String username, String email, String password, String name,boolean locked,String phone,Long themeid,Long userrole) {
+    private String userrole;
+    private Permissions permissions;
+    public UserDetailImpl(Long id, String username, String email, String password, String name, boolean locked, String phone, Long themeid) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -84,8 +81,7 @@ public class UserDetailImpl implements UserDetails {
                 user.getName(),
                 user.isLocked(),
                 user.getPhone(),
-                user.getThemeid(),
-                user.getUserrole());
+                user.getThemeid());
 
 
     }
