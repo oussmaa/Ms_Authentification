@@ -115,5 +115,11 @@ public class LoginController {
         }
 
     }
+    @GetMapping("/{id}")
+    public  User getUserById(@PathVariable Long id) {
+        return loginService.GetUserFromId(id);
+
+
+    }
 
 }
