@@ -5,6 +5,7 @@ import Ms_Login_and_Registers.dto.request.user.LoginRequest;
 import Ms_Login_and_Registers.models.User;
 import Ms_Login_and_Registers.repository.UserRepository;
 import Ms_Login_and_Registers.service.user.LoginService;
+import Ms_Login_and_Registers.service.user.LoginServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.apache.commons.io.FileUtils;
@@ -25,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -36,10 +38,44 @@ public class LoginController {
     LoginService loginService;
 
     @Autowired
+    LoginServiceImpl loginServices;
+
+    @Autowired
     UserRepository userRepository;
 
     @Value("${upload.path}")
     private String uploadPath; // Path to store uploaded files
+
+
+    @PutMapping("/{userId}/roles/{roleId}")
+    public ResponseEntity<?> addRoleToUser(@PathVariable Long userId, @PathVariable Long roleId) {
+        loginServices.addRoleToUser(userId, roleId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{userId}/roles/{roleId}")
+    public ResponseEntity<?> removeRoleFromUser(@PathVariable Long userId, @PathVariable Long roleId) {
+        loginServices.removeRoleFromUser(userId, roleId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{userId}/permissions/{permissionId}")
+    public ResponseEntity<?> addPermissionToUser(@PathVariable Long userId, @PathVariable Long permissionId) {
+        loginServices.addPermissionToUser(userId, permissionId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{userId}/permissions/{permissionId}")
+    public ResponseEntity<?> removePermissionFromUser(@PathVariable Long userId, @PathVariable Long permissionId) {
+        loginServices.removePermissionFromUser(userId, permissionId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
+        User user = loginServices.updateUser(userId, updatedUser);
+        return ResponseEntity.ok(user);
+    }
 
     @PostMapping("/upload")
     public String uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("id") long id) throws Exception {
@@ -115,9 +151,9 @@ public class LoginController {
         }
 
     }
-    @GetMapping("/{id}")
-    public  User getUserById(@PathVariable Long id) {
-        return loginService.GetUserFromId(id);
+    @GetMapping("/GetUserById/{id}")
+    public LoginResponse getUserById(@PathVariable Long id) {
+        return loginServices.GetUserById(id);
 
 
     }

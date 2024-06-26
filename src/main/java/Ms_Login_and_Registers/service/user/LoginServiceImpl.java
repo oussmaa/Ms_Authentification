@@ -1,7 +1,9 @@
 package Ms_Login_and_Registers.service.user;
 
 import Ms_Login_and_Registers.dto.response.user.LoginResponse;
+import Ms_Login_and_Registers.models.Permissions;
 import Ms_Login_and_Registers.models.Roles;
+import Ms_Login_and_Registers.repository.PermisionRepository;
 import Ms_Login_and_Registers.repository.RolesRepository;
 import Ms_Login_and_Registers.repository.UserRepository;
 import Ms_Login_and_Registers.dto.request.user.LoginRequest;
@@ -37,6 +39,9 @@ public class LoginServiceImpl implements LoginService{
     @Autowired
     UserRepository userRepository;
 
+
+    @Autowired
+    private PermisionRepository permissionRepository;
     @Autowired
     RolesRepository rolesRepository;
     @Override
@@ -117,9 +122,25 @@ public class LoginServiceImpl implements LoginService{
 
     @Override
     public User GetUserFromId(Long id) {
-         return userRepository.findById(id).orElseThrow();
-    }
 
+        return  userRepository.findById(id).orElseThrow();
+
+    }
+    public LoginResponse GetUserById(Long id) {
+        Optional<User> userfind =userRepository.findById(id);
+        return LoginResponse.builder()
+                .username(userfind.get().getUsername())
+                .email(userfind.get().getEmail())
+                .name(userfind.get().getName())
+                .locked(userfind.get().isLocked())
+                .phone(userfind.get().getPhone())
+                .themeid(userfind.get().getThemeid())
+                .images(userfind.get().getImages())
+                .id(userfind.get().getId())
+                .roles(userfind.get().getRoles())
+                .permissions(userfind.get().getPermissions())
+                .build();
+    }
     @Override
     public void SaveImageUser(MultipartFile file, Long id) throws Exception {
         try {
@@ -146,4 +167,42 @@ public class LoginServiceImpl implements LoginService{
         }
     }
 
+
+    public void addRoleToUser(Long userId, Long roleId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Roles role = rolesRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
+        user.addRole(role);
+        userRepository.save(user);
+    }
+
+    public void removeRoleFromUser(Long userId, Long roleId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Roles role = rolesRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
+        user.removeRole(role);
+        userRepository.save(user);
+    }
+
+    public void addPermissionToUser(Long userId, Long permissionId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Permissions permission = permissionRepository.findById(permissionId).orElseThrow(() -> new RuntimeException("Permission not found"));
+        user.addPermission(permission);
+        userRepository.save(user);
+    }
+
+    public void removePermissionFromUser(Long userId, Long permissionId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Permissions permission = permissionRepository.findById(permissionId).orElseThrow(() -> new RuntimeException("Permission not found"));
+        user.removePermission(permission);
+        userRepository.save(user);
+    }
+
+    public User updateUser(Long userId, User updatedUser) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update the user entity
+        user.update(updatedUser);
+
+        return userRepository.save(user);
+    }
 }

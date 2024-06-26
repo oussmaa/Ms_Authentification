@@ -73,4 +73,35 @@ public class User {
     @JsonManagedReference
     private Set<Permissions> permissions;
 
+
+    public void addRole(Roles role) {
+        this.roles.add(role);
+        role.getUsers().add(this);
+    }
+
+    public void removeRole(Roles role) {
+        this.roles.remove(role);
+        role.getUsers().remove(this);
+    }
+
+    // Methods to manage permissions
+    public void addPermission(Permissions permission) {
+        this.permissions.add(permission);
+        permission.getUsers().add(this);
+    }
+
+    public void removePermission(Permissions permission) {
+        this.permissions.remove(permission);
+        permission.getUsers().remove(this);
+    }
+    public void update(User newUser) {
+        this.setUsername(newUser.getUsername());
+        this.setEmail(newUser.getEmail());
+        this.setPassword(newUser.getPassword());
+        this.setName(newUser.getName());
+        this.setLocked(newUser.isLocked());
+        this.setPhone(newUser.getPhone());
+        this.setThemeid(newUser.getThemeid());
+        this.setImages(newUser.getImages());
+     }
 }

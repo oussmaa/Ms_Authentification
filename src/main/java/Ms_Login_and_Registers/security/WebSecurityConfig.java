@@ -58,6 +58,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/register/adduser").permitAll()
                                 .requestMatchers("/login/loginuser").permitAll()
+                                .requestMatchers("/login/GetUserById/**").permitAll()
                                 .requestMatchers("/login/GetUser").permitAll()
                                 .requestMatchers("/login/GetAllUsers").permitAll()
                                 .requestMatchers("/login/upload").permitAll()
