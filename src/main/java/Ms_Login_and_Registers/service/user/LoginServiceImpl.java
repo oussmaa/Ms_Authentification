@@ -137,6 +137,7 @@ public class LoginServiceImpl implements LoginService{
                 .themeid(userfind.get().getThemeid())
                 .images(userfind.get().getImages())
                 .id(userfind.get().getId())
+                .adress(userfind.get().getAdress())
                 .roles(userfind.get().getRoles())
                 .permissions(userfind.get().getPermissions())
                 .build();

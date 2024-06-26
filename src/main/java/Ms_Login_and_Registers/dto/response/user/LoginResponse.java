@@ -29,6 +29,7 @@ public class LoginResponse {
     private Long themeid;
     private Roles userrole;
     private String images;
+    private String adress;
     private Set<Roles> roles;
     private Set<Permissions> permissions;
 
