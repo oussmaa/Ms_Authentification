@@ -1,0 +1,34 @@
+name: CICD f
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '18'
+
+      - name: Build Project
+        run: mvn clean install -DskipTests
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+
+      - name: Clear Docker build cache
+        run: docker builder prune -a -f
+
+      - name: Build Docker image
+        run: docker build -t oussama020899/authentificationservice --no-cache .
+
+      - name: Publish image to Docker Hub
+        run: docker push oussama020899/authentificationservice:latest
+

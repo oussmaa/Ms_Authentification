@@ -30,9 +30,9 @@ public class LoginResponse {
     private Roles userrole;
     private String images;
     private String adress;
-    private Set<Roles> roles;
+    private String roles;
     private Set<Permissions> permissions;
-
+    private String password;
     public LoginResponse() {
     }
 

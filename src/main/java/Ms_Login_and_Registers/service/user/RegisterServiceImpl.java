@@ -36,32 +36,24 @@ public class RegisterServiceImpl implements RegisterService {
 
 
     @Override
-    public void process(RegisterRequest request)  throws InvalidRequestException {
-        User user = new User();
-        boolean usernameExists = userRepository.existsByUsername(request.getUsername());
-        if (usernameExists) throw new InvalidRequestException("username already exists");
+    public void process(RegisterRequest request) throws InvalidRequestException {
+            User user = new User();
+            boolean usernameExists = userRepository.existsByUsername(request.getUsername());
+            if (usernameExists) throw new InvalidRequestException("Username already exists");
 
-        boolean emailExists = userRepository.existsByEmail(request.getEmail());
-        if (emailExists) throw new InvalidRequestException("email already exists");
+            boolean emailExists = userRepository.existsByEmail(request.getEmail());
+            if (emailExists) throw new InvalidRequestException("Email already exists");
 
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setName(request.getName());
-        user.setThemeid(request.getThemeid());
-        user.setLocked(request.isLocked());
-        user.setPhone(request.getPhone());
-        user.setPassword(encoder.encode(request.getPassword()));
-        user.setImages(request.getImages());
-        user.setAdress(request.getAdress());
-        // Set roles
-        Set<Roles> roles = new HashSet<>();
-        for (String roleName : request.getRoleNames()) {
-            Roles role = roleRepository.findByRoles(roleName);
-            if (role != null) {
-                roles.add(role);
-            }
-        }
-        user.setRoles(roles);
+            user.setUsername(request.getUsername());
+            user.setEmail(request.getEmail());
+            user.setName(request.getName());
+            user.setThemeid(request.getThemeid());
+            user.setLocked(request.isLocked());
+            user.setPhone(request.getPhone());
+            user.setPassword(encoder.encode(request.getPassword()));
+            user.setImages(request.getImages());
+            user.setAdress(request.getAdress());
+
 
         // Set permissions
         Set<Permissions> permissions = new HashSet<>();
@@ -73,8 +65,22 @@ public class RegisterServiceImpl implements RegisterService {
         }
         user.setPermissions(permissions);
 
-          userRepository.save(user);
+            // Set roles
+            Set<Roles> roles = new HashSet<>();
+
+                Roles role = roleRepository.findByRoles(request.getRoles());
+                if (role != null) {
+                    roles.add(role);
+                } else {
+                    throw new InvalidRequestException("Role " + request.getRoles() + " not found");
+                }
+
+            user.setRoles(roles);
+
+            userRepository.save(user);
+
     }
+
 
 
 }

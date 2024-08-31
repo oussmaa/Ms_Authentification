@@ -63,6 +63,7 @@ public class User {
     private String images;
 
     private String adress;
+
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -74,15 +75,9 @@ public class User {
     private Set<Permissions> permissions;
 
 
-    public void addRole(Roles role) {
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
 
-    public void removeRole(Roles role) {
-        this.roles.remove(role);
-        role.getUsers().remove(this);
-    }
+
+
 
     // Methods to manage permissions
     public void addPermission(Permissions permission) {
@@ -103,5 +98,6 @@ public class User {
         this.setPhone(newUser.getPhone());
         this.setThemeid(newUser.getThemeid());
         this.setImages(newUser.getImages());
+
      }
 }

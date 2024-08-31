@@ -22,7 +22,6 @@ public class Roles {
     private String descrption;
     private Date DefaultDate = new Date();
 
-    @Column(unique = true)
     private String roles;
 
     @ManyToMany(mappedBy = "roles")

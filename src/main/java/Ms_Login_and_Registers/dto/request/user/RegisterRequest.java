@@ -41,7 +41,7 @@ public class RegisterRequest {
      private String images;
     private String adress;
 
-     private Set<String> roleNames;
+     private String roles;
     private Set<String> permissionNames;
 
 }

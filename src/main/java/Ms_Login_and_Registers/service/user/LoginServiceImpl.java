@@ -15,15 +15,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LoginServiceImpl implements LoginService{
@@ -39,6 +41,8 @@ public class LoginServiceImpl implements LoginService{
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PasswordEncoder encoder;
 
     @Autowired
     private PermisionRepository permissionRepository;
@@ -85,6 +89,17 @@ public class LoginServiceImpl implements LoginService{
 
 
         }
+    public String getFirstRoleName(Set<Roles> roles) {
+        if (roles != null && !roles.isEmpty()) {
+            // Get the first role using an iterator
+            Roles firstRole = roles.iterator().next();
+            return firstRole.getRoles(); // Assuming getName() is defined in Role
+        }
+        return null; // or handle the case where the set is empty
+    }
+
+
+
 
     @Override
     public LoginResponse GetUserFromToken(String token) {
@@ -108,8 +123,10 @@ public class LoginServiceImpl implements LoginService{
                         .themeid(userfind.get().getThemeid())
                         .images(userfind.get().getImages())
                         .id(userfind.get().getId())
-                        .roles(userfind.get().getRoles())
+                        .roles(getFirstRoleName(userfind.get().getRoles()))
                         .permissions(userfind.get().getPermissions())
+                        .adress(userfind.get().getAdress())
+                        .password(userfind.get().getPassword())
                         .build();
 
             }
@@ -138,8 +155,9 @@ public class LoginServiceImpl implements LoginService{
                 .images(userfind.get().getImages())
                 .id(userfind.get().getId())
                 .adress(userfind.get().getAdress())
-                .roles(userfind.get().getRoles())
+                .roles(getFirstRoleName(userfind.get().getRoles()))
                 .permissions(userfind.get().getPermissions())
+                .password(userfind.get().getPassword())
                 .build();
     }
     @Override
@@ -169,26 +187,7 @@ public class LoginServiceImpl implements LoginService{
     }
 
 
-    public void addRoleToUser(Long userId, Long roleId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Roles role = rolesRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
-        user.addRole(role);
-        userRepository.save(user);
-    }
 
-    public void removeRoleFromUser(Long userId, Long roleId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Roles role = rolesRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
-        user.removeRole(role);
-        userRepository.save(user);
-    }
-
-    public void addPermissionToUser(Long userId, Long permissionId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Permissions permission = permissionRepository.findById(permissionId).orElseThrow(() -> new RuntimeException("Permission not found"));
-        user.addPermission(permission);
-        userRepository.save(user);
-    }
 
     public void removePermissionFromUser(Long userId, Long permissionId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -197,13 +196,94 @@ public class LoginServiceImpl implements LoginService{
         userRepository.save(user);
     }
 
-    public User updateUser(Long userId, User updatedUser) {
+    public User updateUser(Long userId, LoginResponse updatedUser) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Update the user entity
-        user.update(updatedUser);
+        // Update basic user information
+        if(updatedUser.getUsername()!="")
+        {
+            user.setUsername(updatedUser.getUsername());
 
+        }
+        if(updatedUser.getEmail()!="")
+        {
+            user.setEmail(updatedUser.getEmail());
+
+        }
+        if(updatedUser.getName()!="")
+        {
+            user.setName(updatedUser.getName());
+
+        }
+        Boolean isLocked = updatedUser.isLocked();
+
+        if(isLocked != null) {
+            user.setLocked(isLocked);
+        }
+        if(updatedUser.getPhone()!="")
+        {
+            user.setPhone(updatedUser.getPhone());
+
+        }
+        if(updatedUser.getThemeid()!=null)
+        {
+            user.setThemeid(updatedUser.getThemeid());
+
+        }
+        if(updatedUser.getAdress()!="")
+        {
+            user.setAdress(updatedUser.getAdress());
+
+        }
+
+        // Update password if provided (and encode it)
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            String encodedPassword = encoder.encode(updatedUser.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
+        // Update roles
+        if(updatedUser.getRoles()!= null) {
+            Set<Roles> roles = new HashSet<>();
+
+            Roles role = rolesRepository.findByRoles(updatedUser.getRoles());
+            if (role != null) {
+                roles.add(role);
+            }
+
+
+            // Remove old roles not present in updated roles
+            user.setRoles(roles);
+        }
+        // Update permissions
+        if(updatedUser.getPermissions()!= null) {
+            Set<Permissions> newPermissions = new HashSet<>();
+            for (Permissions permissionName : updatedUser.getPermissions()) {
+                Permissions permission = permissionRepository.findByCode(permissionName.getCode());
+                if (permission != null) {
+                    newPermissions.add(permission);
+                }
+            }
+
+            // Remove old permissions not present in updated permissions
+            user.getPermissions().removeIf(permission -> !newPermissions.contains(permission));
+
+            // Add new permissions
+            user.getPermissions().addAll(newPermissions);
+        }
         return userRepository.save(user);
+    }
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Optionally, remove associated roles
+
+            user.getPermissions().clear(); // Clears all permissions associated with the user
+
+
+        userRepository.delete(user);
     }
 }

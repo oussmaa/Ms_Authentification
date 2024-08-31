@@ -46,33 +46,19 @@ public class LoginController {
     @Value("${upload.path}")
     private String uploadPath; // Path to store uploaded files
 
-
-    @PutMapping("/{userId}/roles/{roleId}")
-    public ResponseEntity<?> addRoleToUser(@PathVariable Long userId, @PathVariable Long roleId) {
-        loginServices.addRoleToUser(userId, roleId);
+    @DeleteMapping("/deleteUser/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        loginServices.deleteUser(userId);
         return ResponseEntity.ok().build();
     }
-
-    @DeleteMapping("/{userId}/roles/{roleId}")
-    public ResponseEntity<?> removeRoleFromUser(@PathVariable Long userId, @PathVariable Long roleId) {
-        loginServices.removeRoleFromUser(userId, roleId);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{userId}/permissions/{permissionId}")
-    public ResponseEntity<?> addPermissionToUser(@PathVariable Long userId, @PathVariable Long permissionId) {
-        loginServices.addPermissionToUser(userId, permissionId);
-        return ResponseEntity.ok().build();
-    }
-
     @DeleteMapping("/{userId}/permissions/{permissionId}")
     public ResponseEntity<?> removePermissionFromUser(@PathVariable Long userId, @PathVariable Long permissionId) {
         loginServices.removePermissionFromUser(userId, permissionId);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
+    @PutMapping("/UpdateUser/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody LoginResponse updatedUser) {
         User user = loginServices.updateUser(userId, updatedUser);
         return ResponseEntity.ok(user);
     }
